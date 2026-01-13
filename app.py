@@ -101,45 +101,71 @@ def main():
         }
         """
 
-    # CSS for styling and background colors - FIXED COLORS FOR CONSISTENCY
+    # CSS for styling and background colors - FIXED COLORS + AGGRESSIVE OVERRIDES
     st.markdown(f"""
     <style>
-        .stApp {{ background-color: #f0f8ff !important; color: #03263a !important; }}
-        .css-18e3th9 {{ background-color: #f0f8ff !important; }}
-        .stButton>button {{ background-color: #0b82bf !important; color: #ffffff !important; }}
-        .stDownloadButton>button {{ background-color: #0b82bf !important; color: #ffffff !important; }}
-        .stSidebar {{ background-color: #e6f3ff !important; }}
-        .stMarkdown div {{ color: #03263a !important; }}
-        img.logo-right {{ max-height:200px; }}
-        
-        /* Force consistent theme regardless of browser preference */
-        * {{
+        /* FORCE LIGHT MODE FOR EVERYONE */
+        *, *::before, *::after {{
             color-scheme: light !important;
         }}
         
-        /* ALLOW POOL WATER TO SHOW THROUGH - Remove aggressive backgrounds */
-        .main .block-container {{ background-color: transparent !important; }}
-        .stContainer {{ background-color: transparent !important; }}
-        div[data-testid="stVerticalBlock"] {{ background-color: transparent !important; }}
-        div[data-testid="stHorizontalBlock"] {{ background-color: transparent !important; }}
-        .element-container {{ background-color: rgba(240, 248, 255, 0.7) !important; }}
-        section[data-testid="stSidebar"] {{ background-color: #e6f3ff !important; }}
-        
-        /* Keep sidebar themed but make main area transparent */
-        div[role="main"] {{ background-color: transparent !important; }}
-        section.main {{ background-color: transparent !important; }}
-        .css-k1vhr4, .css-1d391kg {{ background-color: transparent !important; }}
-        
-
-        
-        /* Pool water background will be inserted dynamically */
-        {pool_water_css}
-        
-        /* Ensure content stays readable over the background */
-        .main .block-container {{
-            position: relative;
-            z-index: 1;
+        .stApp {{ 
+            background-color: #f0f8ff !important; 
+            color: #03263a !important; 
         }}
+        .css-18e3th9 {{ background-color: #f0f8ff !important; }}
+        .stButton>button {{ 
+            background-color: #0b82bf !important; 
+            color: #ffffff !important; 
+        }}
+        .stDownloadButton>button {{ 
+            background-color: #0b82bf !important; 
+            color: #ffffff !important; 
+        }}
+        .stSidebar {{ 
+            background-color: #e6f3ff !important; 
+            color: #03263a !important;
+        }}
+        .stMarkdown div {{ 
+            color: #03263a !important; 
+            background-color: transparent !important;
+        }}
+        
+        /* AGGRESSIVE TEXT COLOR OVERRIDES */
+        .stMarkdown, .stMarkdown p, .stMarkdown div, .stMarkdown span,
+        h1, h2, h3, h4, h5, h6, p, div, span, label, .stSelectbox label,
+        .stNumberInput label, .stTextInput label {{
+            color: #03263a !important;
+        }}
+        
+        /* SIDEBAR TEXT FIXES */
+        .stSidebar .stMarkdown, .stSidebar h1, .stSidebar h2, .stSidebar h3,
+        .stSidebar p, .stSidebar div, .stSidebar span, .stSidebar label {{
+            color: #03263a !important;
+        }}
+        
+        img.logo-right {{ max-height:200px; }}
+        
+        /* REMOVE POOL WATER BACKGROUND FOR BETTER PERFORMANCE */
+        .main .block-container {{ 
+            background-color: #f0f8ff !important; 
+        }}
+        .stContainer {{ background-color: #f0f8ff !important; }}
+        div[data-testid="stVerticalBlock"] {{ background-color: #f0f8ff !important; }}
+        div[data-testid="stHorizontalBlock"] {{ background-color: #f0f8ff !important; }}
+        .element-container {{ 
+            background-color: rgba(240, 248, 255, 0.9) !important; 
+            color: #03263a !important;
+        }}
+        section[data-testid="stSidebar"] {{ 
+            background-color: #e6f3ff !important; 
+            color: #03263a !important;
+        }}
+        
+        /* Make main areas solid for better readability */
+        div[role="main"] {{ background-color: #f0f8ff !important; }}
+        section.main {{ background-color: #f0f8ff !important; }}
+        .css-k1vhr4, .css-1d391kg {{ background-color: #f0f8ff !important; }}
         
         /* Mobile Responsiveness */
         @media (max-width: 768px) {{
@@ -151,70 +177,45 @@ def main():
     </style>
     """, unsafe_allow_html=True)
 
-    # Add pool water background directly as HTML - SIMPLE VERSION
-    pool_water_b64 = None
-    try:
-        pool_water_path = Path(__file__).parent / 'pool_water.jpg'
-        if pool_water_path.exists():
-            with open(pool_water_path, 'rb') as f:
-                pool_water_bytes = f.read()
-            pool_water_b64 = base64.b64encode(pool_water_bytes).decode('utf-8')
-    except:
-        pass
-    
-    # Create reusable pool water background function
-    def add_pool_water_background():
-        if pool_water_b64:
-            st.markdown(f'''
-            <div style="
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                background-image: url('data:image/jpeg;base64,{pool_water_b64}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                opacity: 0.08;
-                z-index: -100;
-                pointer-events: none;
-            "></div>
-            <style>
-            /* Force all main areas to be transparent so pool water shows through */
-            .stApp, .main, .block-container {{
-                background: transparent !important;
-                background-color: transparent !important;
-            }}
-            /* Make all individual elements transparent for seamless background */
-            .element-container, .stMarkdown, .stButton, .stSelectbox, .stNumberInput {{
-                background: transparent !important;
-                background-color: transparent !important;
-            }}
-            /* Tables and content areas - fixed light theme */
-            .stDataFrame, .stTable {{
-                background: rgba(240, 248, 255, 0.3) !important;
-                border-radius: 8px !important;
-            }}
-            /* Text input fields - fixed light theme for usability */
-            .stTextInput > div > div, .stNumberInput > div > div, .stSelectbox > div > div {{
-                background: rgba(255, 255, 255, 0.8) !important;
-                border-radius: 4px !important;
-                color: #03263a !important;
-            }}
-            /* Keep sidebar blue - fixed theme */
-            .stSidebar {{
-                background-color: #e6f3ff !important;
-            }}
-            /* Status and recommendation boxes - fixed light backgrounds */
-            div[style*="background: linear-gradient"] {{
-                background: linear-gradient(135deg, rgba(232, 244, 253, 0.8) 0%, rgba(240, 248, 255, 0.8) 100%) !important;
-            }}
-            </style>
-            ''', unsafe_allow_html=True)
-    
-    # Add pool water background initially
-    add_pool_water_background()
+    # REMOVE POOL WATER BACKGROUND FOR BETTER PERFORMANCE
+    # Simple gradient background instead of heavy image
+    st.markdown('''
+    <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0f8ff 100%);
+        z-index: -100;
+        pointer-events: none;
+    "></div>
+    <style>
+    /* Force all areas to have solid backgrounds for readability */
+    .stApp, .main, .block-container {
+        background: #f0f8ff !important;
+        background-color: #f0f8ff !important;
+    }
+    /* Input fields - solid backgrounds for visibility */
+    .stTextInput > div > div, .stNumberInput > div > div, .stSelectbox > div > div {
+        background: #ffffff !important;
+        border: 2px solid #b3d9ff !important;
+        border-radius: 4px !important;
+        color: #03263a !important;
+    }
+    /* Tables and content areas - solid backgrounds */
+    .stDataFrame, .stTable {
+        background: #ffffff !important;
+        border: 1px solid #b3d9ff !important;
+        border-radius: 8px !important;
+    }
+    /* Sidebar - solid background */
+    .stSidebar {
+        background-color: #e6f3ff !important;
+        color: #03263a !important;
+    }
+    </style>
+    ''', unsafe_allow_html=True)
 
     # Custom font loading
     @st.cache_data
@@ -251,9 +252,6 @@ def main():
                     break
         if workspace_logo:
             st.image(workspace_logo, width=200)
-    
-    # Re-add pool water background after logo
-    add_pool_water_background()
 
     # Load frankthearchitect font from the app directory
     embedded_font_css = None
@@ -272,20 +270,23 @@ def main():
 
 
 
-    # Inject FrankTheArchitect font CSS for all text - FIXED COLORS
+    # Inject FrankTheArchitect font CSS for all text - FIXED COLORS + READABILITY
     font_css_block = embedded_font_css or "@font-face { font-family: 'FrankTheArchitect'; src: local('FrankTheArchitect'), local('Architect'); }"
     st.markdown(f"""
     <style>
     {font_css_block}
-    html, body, [class*="css"], .stApp, .stMarkdown, h1, h2, h3, h4, h5, h6, p, div, span {{ font-family: FrankTheArchitect, 'Architect', monospace !important; }}
+    html, body, [class*="css"], .stApp, .stMarkdown, h1, h2, h3, h4, h5, h6, p, div, span {{ 
+        font-family: FrankTheArchitect, 'Architect', monospace !important; 
+        color: #03263a !important;
+    }}
     .kpi-badge {{
         display:inline-block; padding:8px 14px; border-radius:8px; color: white; font-weight:700; font-size:20px; font-family: FrankTheArchitect, monospace;
     }}
     .logo-accent {{ background: linear-gradient(90deg, #0b82bf, rgba(255,255,255,0.13)); padding:6px; border-radius:8px }}
     
-    /* Expandable sections with fixed colors */
+    /* Expandable sections with solid backgrounds for readability */
     .stExpander {{ 
-        background: rgba(240, 248, 255, 0.9) !important; 
+        background: #ffffff !important; 
         border: 3px solid #0b82bf !important; 
         border-radius: 10px !important; 
         margin: 10px 0 !important;
@@ -293,7 +294,7 @@ def main():
         position: relative !important;
     }}
     .stExpander details {{ 
-        background: rgba(240, 248, 255, 0.9) !important; 
+        background: #ffffff !important; 
         border: none !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -582,9 +583,6 @@ def main():
     
     # Try using st.write instead of st.markdown
     st.write(html_table, unsafe_allow_html=True)
-    
-    # Re-add pool water background after table
-    add_pool_water_background()
     
     # Show recommended size badge with color (green/yellow/red) and include 'in'
     def badge_for_velocity(vel):
