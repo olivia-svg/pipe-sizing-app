@@ -101,54 +101,29 @@ def main():
         }
         """
 
-    # CSS for styling and background colors with dark/light mode support
+    # CSS for styling and background colors - FIXED COLORS FOR CONSISTENCY
     st.markdown(f"""
     <style>
-        /* Light mode (default) */
-        :root {{
-            --bg-primary: #f0f8ff;
-            --bg-secondary: #e6f3ff;
-            --text-primary: #03263a;
-            --text-secondary: #0b82bf;
-            --button-bg: #0b82bf;
-            --button-text: #ffffff;
-            --table-bg: rgba(240, 248, 255, 0.7);
-            --border-color: #b3d9ff;
-            --card-bg: rgba(240, 248, 255, 0.9);
-            --pool-opacity: 0.08;
-        }}
-        
-        /* Dark mode */
-        @media (prefers-color-scheme: dark) {{
-            :root {{
-                --bg-primary: #1a1a1a;
-                --bg-secondary: #2d2d2d;
-                --text-primary: #ffffff;
-                --text-secondary: #4da6d9;
-                --button-bg: #4da6d9;
-                --button-text: #000000;
-                --table-bg: rgba(45, 45, 45, 0.9);
-                --border-color: #4da6d9;
-                --card-bg: rgba(45, 45, 45, 0.9);
-                --pool-opacity: 0.03;
-            }}
-        }}
-        
-        .stApp {{ background-color: var(--bg-primary); color: var(--text-primary); }}
-        .css-18e3th9 {{ background-color: var(--bg-primary); }}
-        .stButton>button {{ background-color: var(--button-bg); color: var(--button-text); }}
-        .stDownloadButton>button {{ background-color: var(--button-bg); color: var(--button-text); }}
-        .stSidebar {{ background-color: var(--bg-secondary); }}
-        .stMarkdown div{{ color: var(--text-primary); }}
+        .stApp {{ background-color: #f0f8ff !important; color: #03263a !important; }}
+        .css-18e3th9 {{ background-color: #f0f8ff !important; }}
+        .stButton>button {{ background-color: #0b82bf !important; color: #ffffff !important; }}
+        .stDownloadButton>button {{ background-color: #0b82bf !important; color: #ffffff !important; }}
+        .stSidebar {{ background-color: #e6f3ff !important; }}
+        .stMarkdown div {{ color: #03263a !important; }}
         img.logo-right {{ max-height:200px; }}
+        
+        /* Force consistent theme regardless of browser preference */
+        * {{
+            color-scheme: light !important;
+        }}
         
         /* ALLOW POOL WATER TO SHOW THROUGH - Remove aggressive backgrounds */
         .main .block-container {{ background-color: transparent !important; }}
         .stContainer {{ background-color: transparent !important; }}
         div[data-testid="stVerticalBlock"] {{ background-color: transparent !important; }}
         div[data-testid="stHorizontalBlock"] {{ background-color: transparent !important; }}
-        .element-container {{ background-color: var(--table-bg) !important; }}
-        section[data-testid="stSidebar"] {{ background-color: var(--bg-secondary) !important; }}
+        .element-container {{ background-color: rgba(240, 248, 255, 0.7) !important; }}
+        section[data-testid="stSidebar"] {{ background-color: #e6f3ff !important; }}
         
         /* Keep sidebar themed but make main area transparent */
         div[role="main"] {{ background-color: transparent !important; }}
@@ -201,7 +176,7 @@ def main():
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
-                opacity: var(--pool-opacity);
+                opacity: 0.08;
                 z-index: -100;
                 pointer-events: none;
             "></div>
@@ -216,24 +191,24 @@ def main():
                 background: transparent !important;
                 background-color: transparent !important;
             }}
-            /* Tables and content areas - themed background */
+            /* Tables and content areas - fixed light theme */
             .stDataFrame, .stTable {{
-                background: var(--table-bg) !important;
+                background: rgba(240, 248, 255, 0.3) !important;
                 border-radius: 8px !important;
             }}
-            /* Text input fields - themed background for usability */
+            /* Text input fields - fixed light theme for usability */
             .stTextInput > div > div, .stNumberInput > div > div, .stSelectbox > div > div {{
-                background: var(--card-bg) !important;
+                background: rgba(255, 255, 255, 0.8) !important;
                 border-radius: 4px !important;
-                color: var(--text-primary) !important;
+                color: #03263a !important;
             }}
-            /* Keep sidebar themed */
+            /* Keep sidebar blue - fixed theme */
             .stSidebar {{
-                background-color: var(--bg-secondary) !important;
+                background-color: #e6f3ff !important;
             }}
-            /* Status and recommendation boxes - themed backgrounds */
+            /* Status and recommendation boxes - fixed light backgrounds */
             div[style*="background: linear-gradient"] {{
-                background: var(--card-bg) !important;
+                background: linear-gradient(135deg, rgba(232, 244, 253, 0.8) 0%, rgba(240, 248, 255, 0.8) 100%) !important;
             }}
             </style>
             ''', unsafe_allow_html=True)
@@ -297,7 +272,7 @@ def main():
 
 
 
-    # Inject FrankTheArchitect font CSS for all text with theme support
+    # Inject FrankTheArchitect font CSS for all text - FIXED COLORS
     font_css_block = embedded_font_css or "@font-face { font-family: 'FrankTheArchitect'; src: local('FrankTheArchitect'), local('Architect'); }"
     st.markdown(f"""
     <style>
@@ -306,26 +281,26 @@ def main():
     .kpi-badge {{
         display:inline-block; padding:8px 14px; border-radius:8px; color: white; font-weight:700; font-size:20px; font-family: FrankTheArchitect, monospace;
     }}
-    .logo-accent {{ background: linear-gradient(90deg, var(--text-secondary), rgba(255,255,255,0.13)); padding:6px; border-radius:8px }}
+    .logo-accent {{ background: linear-gradient(90deg, #0b82bf, rgba(255,255,255,0.13)); padding:6px; border-radius:8px }}
     
-    /* Expandable sections with theme support */
+    /* Expandable sections with fixed colors */
     .stExpander {{ 
-        background: var(--card-bg) !important; 
-        border: 3px solid var(--text-secondary) !important; 
+        background: rgba(240, 248, 255, 0.9) !important; 
+        border: 3px solid #0b82bf !important; 
         border-radius: 10px !important; 
         margin: 10px 0 !important;
         overflow: hidden !important;
         position: relative !important;
     }}
     .stExpander details {{ 
-        background: var(--card-bg) !important; 
+        background: rgba(240, 248, 255, 0.9) !important; 
         border: none !important;
         margin: 0 !important;
         padding: 0 !important;
     }}
     .stExpander details summary {{ 
-        background: var(--bg-primary) !important; 
-        color: var(--text-primary) !important;
+        background: #f0f8ff !important; 
+        color: #03263a !important;
         padding: 15px !important; 
         font-weight: bold !important; 
         cursor: pointer !important;
@@ -334,8 +309,8 @@ def main():
         z-index: 1000 !important;
     }}
     .stExpander details[open] summary {{ 
-        background: var(--bg-secondary) !important; 
-        border-bottom: 2px solid var(--text-secondary) !important;
+        background: #e6f3ff !important; 
+        border-bottom: 2px solid #0b82bf !important;
     }}
     
     /* Hide unwanted elements */
@@ -572,12 +547,12 @@ def main():
     # FILTER OUT 12 INCH PIPE - we don't need it!
     display_df = display_df[display_df['Nominal Pipe Size (in)'] != 12.0]
     
-    # Build the table using themed colors
+    # Build the table using fixed colors
     html_table = """
     <div style="display: flex; justify-content: center; margin: 20px 0;">
-        <table style="border-collapse: collapse; width: 90%; max-width: 700px; font-family: 'FrankTheArchitect', monospace; font-size: 18px; background-color: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 6px 12px rgba(11, 130, 191, 0.15); border: 1px solid var(--border-color);">
+        <table style="border-collapse: collapse; width: 90%; max-width: 700px; font-family: 'FrankTheArchitect', monospace; font-size: 18px; background-color: #fbfcff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 12px rgba(11, 130, 191, 0.15); border: 1px solid #d6e9ff;">
             <thead>
-                <tr style="background: linear-gradient(135deg, var(--text-secondary) 0%, var(--button-bg) 100%); color: var(--button-text);">
+                <tr style="background: linear-gradient(135deg, #0b82bf 0%, #1e90ff 100%); color: #ffffff;">
                     <th style="padding: 18px 20px; text-align: center; font-weight: bold; border: none; font-size: 16px;">Nominal Pipe Size (in)</th>
                     <th style="padding: 18px 20px; text-align: center; font-weight: bold; border: none; font-size: 16px;">Velocity of water (ft/s)</th>
                 </tr>
@@ -597,7 +572,7 @@ def main():
         else:
             color = '#2ca02c'  # Green
             
-        html_table += f'<tr style="border-bottom: 1px solid var(--border-color); background-color: {"var(--table-bg)" if len([x for x in display_df.iterrows()][:display_df.index.get_loc(row.name) + 1]) % 2 == 0 else "var(--card-bg)"};"><td style="padding: 14px 20px; text-align: center; font-weight: bold; border: none; color: var(--text-primary);">{row["Nominal Pipe Size (in)"]}</td><td style="padding: 14px 20px; text-align: center; font-weight: bold; color: {color}; border: none;">{velocity}</td></tr>'
+        html_table += f'<tr style="border-bottom: 1px solid #e6f3ff; background-color: {"#f8fbff" if len([x for x in display_df.iterrows()][:display_df.index.get_loc(row.name) + 1]) % 2 == 0 else "#fbfcff"};"><td style="padding: 14px 20px; text-align: center; font-weight: bold; border: none; color: #03263a;">{row["Nominal Pipe Size (in)"]}</td><td style="padding: 14px 20px; text-align: center; font-weight: bold; color: {color}; border: none;">{velocity}</td></tr>'
     
     html_table += """
             </tbody>
@@ -627,13 +602,13 @@ def main():
         vel_for_badge = float(df['Velocity (ft/s)'].max()) if not df.empty else 0.0
     badge_color, badge_label = badge_for_velocity(vel_for_badge)
     
-    # CENTERED RECOMMENDATION UNDER TABLE - NOW WITH THEME SUPPORT!
+    # CENTERED RECOMMENDATION UNDER TABLE - FIXED COLORS!
     st.markdown(f"""
     <div style='width: 100%; text-align: center; margin: 25px auto; padding: 16px; 
-                background: var(--card-bg); 
-                border: 2px solid var(--border-color); border-radius: 12px; 
+                background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%); 
+                border: 2px solid #b3d9ff; border-radius: 12px; 
                 max-width: 700px; box-shadow: 0 4px 8px rgba(11, 130, 191, 0.1);'>
-        <div style='margin-bottom: 8px; font-size: 18px; font-weight: bold; color: var(--text-secondary);'>Recommended Pipe Size</div>
+        <div style='margin-bottom: 8px; font-size: 18px; font-weight: bold; color: #0b82bf;'>Recommended Pipe Size</div>
         {f'<div style="font-size: 24px; font-weight: bold; color: {badge_color}; margin: 8px 0;">{recommended_size} in</div>' if recommended_size else '<div style="font-size: 24px; font-weight: bold; color: #d62728; margin: 8px 0;">None Available</div>'}
         {f'<div style="font-size: 16px; color: {badge_color}; font-weight: bold;">Velocity: {recommended_velocity:.2f} ft/s</div>' if recommended_velocity else ''}
     </div>
@@ -652,13 +627,13 @@ def main():
         vel_for_badge = float(vel_candidates.min()) if not vel_candidates.empty else float(df['Velocity (ft/s)'].max())
     except Exception:
         vel_for_badge = float(df['Velocity (ft/s)'].max()) if not df.empty else 0.0
-    # Status text centered under the table with background box - THEMED VERSION!
+    # Status text centered under the table with background box - FIXED COLORS!
     st.markdown(f"""
     <div style='width: 100%; text-align: center; margin: 25px auto; padding: 16px; 
-                background: var(--card-bg); 
-                border: 2px solid var(--border-color); border-radius: 12px; 
+                background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%); 
+                border: 2px solid #b3d9ff; border-radius: 12px; 
                 max-width: 700px; font-size: 16px; box-shadow: 0 4px 8px rgba(11, 130, 191, 0.1);'>
-        <strong style='color: var(--text-secondary);'>Status:</strong> {badge_label} &nbsp;•&nbsp; <em style='color: var(--text-secondary);'>Limit used:</em> {active_limit} ft/s
+        <strong style='color: #0b82bf;'>Status:</strong> {badge_label} &nbsp;•&nbsp; <em style='color: #0b82bf;'>Limit used:</em> {active_limit} ft/s
     </div>
     """, unsafe_allow_html=True)
 
