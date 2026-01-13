@@ -290,44 +290,6 @@ def main():
         recommended_size = first_acceptable['Nominal (in)']
         recommended_velocity = first_acceptable['Velocity (ft/s)']
 
-    # INPUTS SECTION - MOVED TO BE RIGHT BEFORE RESULTS
-    st.subheader('Inputs')
-    
-    # Create input columns for better mobile layout
-    input_col1, input_col2 = st.columns([1, 1])
-    
-    with input_col1:
-        flow_gpm = st.number_input('Flow Rate (gpm)', value=float(flow_gpm), min_value=0.0, step=1.0)
-    
-    with input_col2:
-        # Change "Discharge" to "Return"
-        line_type = st.selectbox('Line Type', options=['Suction', 'Return'], 
-                                index=0 if (str(line_type).lower().startswith('suction')) else 1, 
-                                help='Choose Suction or Return')
-    
-    st.write(f'Water ν (ft²/s): {nu}')
-    
-    # Advanced threshold controls - always visible
-    st.subheader('Thresholds')
-    
-    threshold_col1, threshold_col2 = st.columns([1, 1])
-    
-    with threshold_col1:
-        if line_type == 'Suction':
-            default_design = 4.5
-        else:  # Return (previously Discharge)
-            default_design = 6.0
-        design_limit = st.number_input('Design limit (ft/s)', value=float(default_design), help='Velocity considered fully acceptable')
-    
-    with threshold_col2:
-        if line_type == 'Suction':
-            default_line = 6.0
-        else:  # Return (previously Discharge)
-            default_line = 8.0
-        line_limit = st.number_input('Line limit (ft/s)', value=float(default_line), help='Upper limit for this line type; velocities above this are unacceptable')
-    
-    st.caption('Status rule: Acceptable if ≤ Design limit; Above design limit if ≤ Line limit; Unacceptable otherwise')
-    
     st.subheader('Computed pipe table')
 
     # Use AgGrid for nicer interactive table with conditional text coloring
