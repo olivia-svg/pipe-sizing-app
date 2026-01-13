@@ -1,0 +1,21 @@
+# RENDER DEPLOYMENT INSTRUCTIONS
+# 
+# This file is not used by Render - it uses render.yaml instead
+# 
+# To deploy to Render:
+# 1. Push your code to GitHub
+# 2. Go to https://render.com
+# 3. Connect your GitHub account
+# 4. Create new "Web Service"
+# 5. Select this repository
+# 6. Render will automatically detect the render.yaml file
+# 7. Click "Create Web Service"
+# 
+# Your app will be live at: https://your-app-name.onrender.com
+# 
+# Benefits:
+# - Completely FREE for small apps
+# - No Streamlit branding
+# - Automatic HTTPS
+# - Custom domains available
+# - Sleeps after 15min inactivity (wakes up in ~30 seconds)
