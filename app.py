@@ -9,6 +9,13 @@ import io
 import base64
 import traceback
 
+st.markdown("""
+<style>
+/* Hide Streamlit footer and fullscreen button */
+footer {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
 
 def main():
     st.set_page_config(page_title='PVC Pipe Sizing Explorer', layout='wide')
