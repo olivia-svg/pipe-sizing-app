@@ -86,7 +86,67 @@ def main():
         if workspace_logo:
             st.image(workspace_logo, width=200)
 
-    # MAIN INPUTS SECTION - MOVED FROM SIDEBAR
+    # Load workbook from the app directory FIRST
+    excel_path = Path(__file__).parent / 'pipe_sizing.xlsx'
+    try:
+        with open(excel_path, 'rb') as f:
+            wb_bytes = f.read()
+    except FileNotFoundError:
+        st.error(f'`pipe_sizing.xlsx` not found at {excel_path}. Please ensure the file exists in the same directory as this app.')
+        return
+
+    # Load workbook (formulas and values)
+    wb = load_workbook(filename=BytesIO(wb_bytes), data_only=False)
+    wb_vals = load_workbook(filename=BytesIO(wb_bytes), data_only=True)
+
+    # Use the first sheet automatically (no display needed)
+    sheet = wb.sheetnames[0]
+    ws = wb[sheet]
+    ws_vals = wb_vals[sheet]
+
+    def find_label_row(label_text_prefix):
+        """Find a row index where column A starts with label_text_prefix (case-insensitive)."""
+        for r in range(1, ws.max_row + 1):
+            v = ws.cell(row=r, column=1).value
+            if isinstance(v, str) and v.strip().lower().startswith(label_text_prefix.lower()):
+                return r
+        return None
+
+    # Read inputs by label (robust to small layout shifts)
+    flow_row = find_label_row('Flow Rate')
+    line_type_row = find_label_row('Line Type')
+    nu_row = find_label_row('Water')
+
+    # fallback row numbers if detection fails (based on current workbook)
+    if flow_row is None:
+        flow_row = 5
+    if line_type_row is None:
+        line_type_row = 6
+    if nu_row is None:
+        nu_row = 8
+
+    def get_cell_value(r, c):
+        return ws_vals.cell(row=r, column=c).value
+
+    flow_gpm = get_cell_value(flow_row, 2) or 100.0
+    line_type = get_cell_value(line_type_row, 2) or 'Suction'
+
+    # Find constants by scanning the sheet for known labels in column D/E
+    constants = {}
+    for r in range(1, ws.max_row + 1):
+        label = ws.cell(row=r, column=4).value  # column D often contains constant labels
+        val = ws_vals.cell(row=r, column=5).value  # column E often contains the numeric value
+        if isinstance(label, str):
+            constants[label.strip()] = val
+
+    gal_to_ft3 = constants.get('gal_to_ft^3', 0.133681)
+    sec_per_min = constants.get('sec_per_min', 60.0)
+    pi = constants.get('π', 3.141592653589793)
+
+    # kinematic viscosity is often in column B of its label row
+    nu = get_cell_value(nu_row, 2) or 1.1e-05
+
+    # NOW SHOW INPUTS SECTION
     st.subheader('Inputs')
     
     # Create input columns for better mobile layout
@@ -158,71 +218,7 @@ def main():
 
     
 
-    # Load workbook from the app directory
-    excel_path = Path(__file__).parent / 'pipe_sizing.xlsx'
-    try:
-        with open(excel_path, 'rb') as f:
-            wb_bytes = f.read()
-    except FileNotFoundError:
-        st.error(f'`pipe_sizing.xlsx` not found at {excel_path}. Please ensure the file exists in the same directory as this app.')
-        return
 
-    # Load workbook (formulas and values)
-    wb = load_workbook(filename=BytesIO(wb_bytes), data_only=False)
-    wb_vals = load_workbook(filename=BytesIO(wb_bytes), data_only=True)
-
-    # Use the first sheet automatically (no display needed)
-    sheet = wb.sheetnames[0]
-    ws = wb[sheet]
-    ws_vals = wb_vals[sheet]
-
-
-    def find_label_row(label_text_prefix):
-        """Find a row index where column A starts with label_text_prefix (case-insensitive)."""
-        for r in range(1, ws.max_row + 1):
-            v = ws.cell(row=r, column=1).value
-            if isinstance(v, str) and v.strip().lower().startswith(label_text_prefix.lower()):
-                return r
-        return None
-
-
-    # Read inputs by label (robust to small layout shifts)
-    flow_row = find_label_row('Flow Rate')
-    line_type_row = find_label_row('Line Type')
-    nu_row = find_label_row('Water')
-
-    # fallback row numbers if detection fails (based on current workbook)
-    if flow_row is None:
-        flow_row = 5
-    if line_type_row is None:
-        line_type_row = 6
-    if nu_row is None:
-        nu_row = 8
-
-
-    def get_cell_value(r, c):
-        return ws_vals.cell(row=r, column=c).value
-
-    flow_gpm = get_cell_value(flow_row, 2) or 100.0
-    line_type = get_cell_value(line_type_row, 2) or 'Suction'
-
-    # Find constants by scanning the sheet for known labels in column D/E
-    constants = {}
-    for r in range(1, ws.max_row + 1):
-        label = ws.cell(row=r, column=4).value  # column D often contains constant labels
-        val = ws_vals.cell(row=r, column=5).value  # column E often contains the numeric value
-        if isinstance(label, str):
-            constants[label.strip()] = val
-
-    gal_to_ft3 = constants.get('gal_to_ft^3', 0.133681)
-    sec_per_min = constants.get('sec_per_min', 60.0)
-    pi = constants.get('π', 3.141592653589793)
-
-    # kinematic viscosity is often in column B of its label row
-    nu = get_cell_value(nu_row, 2) or 1.1e-05
-
-    # Remove all sidebar inputs - we'll use main area inputs only
-    debug = False  # Remove debug functionality
 
     # Locate the pipe size table by finding the header row that starts with 'Nominal Size'
     table_header_row = None
