@@ -65,26 +65,29 @@ def main():
             return base64.b64encode(font_data).decode()
         return None
 
-    # Header with optional logo (prefers workspace logo file if present)
-    col_title, col_logo = st.columns([3, 1])
-    with col_title:
-        st.title('PVC Pipe Sizing')
-    with col_logo:
-        workspace_logo = None
-        app_dir = Path(__file__).parent
-        # Look for JBDG logo first
-        jbdg_logo = app_dir / 'JBDG Logo-2.jpg'
-        if jbdg_logo.exists():
-            workspace_logo = str(jbdg_logo)
-        else:
-            # Fallback to other logo files
-            for ext in ('png', 'jpg', 'jpeg'):
-                logo_path = app_dir / f'logo.{ext}'
-                if logo_path.exists():
-                    workspace_logo = str(logo_path)
-                    break
-        if workspace_logo:
+    # Header with optional logo (mobile-friendly layout)
+    workspace_logo = None
+    app_dir = Path(__file__).parent
+    # Look for JBDG logo first
+    jbdg_logo = app_dir / 'JBDG Logo-2.jpg'
+    if jbdg_logo.exists():
+        workspace_logo = str(jbdg_logo)
+    else:
+        # Fallback to other logo files
+        for ext in ('png', 'jpg', 'jpeg'):
+            logo_path = app_dir / f'logo.{ext}'
+            if logo_path.exists():
+                workspace_logo = str(logo_path)
+                break
+    
+    # Show logo first (appears above title on mobile)
+    if workspace_logo:
+        col_logo_mobile, col_spacer = st.columns([1, 2])
+        with col_logo_mobile:
             st.image(workspace_logo, width=200)
+    
+    # Title below logo (better for mobile)
+    st.title('PVC Pipe Sizing')
 
     # Load workbook from the app directory FIRST
     excel_path = Path(__file__).parent / 'pipe_sizing.xlsx'
