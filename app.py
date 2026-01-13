@@ -163,26 +163,13 @@ def main():
     
     st.write(f'Water ν (ft²/s): {nu}')
     
-    # Advanced threshold controls - always visible
-    st.subheader('Thresholds')
-    
-    threshold_col1, threshold_col2 = st.columns([1, 1])
-    
-    with threshold_col1:
-        if line_type == 'Suction':
-            default_design = 4.5
-        else:  # Return (previously Discharge)
-            default_design = 6.0
-        design_limit = st.number_input('Design limit (ft/s)', value=float(default_design), help='Velocity considered fully acceptable')
-    
-    with threshold_col2:
-        if line_type == 'Suction':
-            default_line = 6.0
-        else:  # Return (previously Discharge)
-            default_line = 8.0
-        line_limit = st.number_input('Line limit (ft/s)', value=float(default_line), help='Upper limit for this line type; velocities above this are unacceptable')
-    
-    st.caption('Status rule: Acceptable if ≤ Design limit; Above design limit if ≤ Line limit; Unacceptable otherwise')
+    # Set design limits based on line type (hardcoded - no user input needed)
+    if line_type == 'Suction':
+        design_limit = 4.5
+        line_limit = 6.0
+    else:  # Return (previously Discharge)
+        design_limit = 6.0
+        line_limit = 8.0
 
     # Load frankthearchitect font from the app directory
     embedded_font_css = None
