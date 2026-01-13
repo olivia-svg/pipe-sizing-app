@@ -13,159 +13,30 @@ import traceback
 def main():
     st.set_page_config(page_title='PVC Pipe Sizing Explorer', layout='wide')
 
-    # Load pool water background image FIRST
-    pool_water_css = ""
-    try:
-        pool_water_path = Path(__file__).parent / 'pool_water.jpg'
-        if pool_water_path.exists():
-            with open(pool_water_path, 'rb') as f:
-                pool_water_bytes = f.read()
-            pool_water_b64 = base64.b64encode(pool_water_bytes).decode('utf-8')
-            pool_water_css = f"""
-            /* Tranquil pool water background - loaded as base64 */
-            .main .block-container::after {{
-                content: '';
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 35%;
-                height: 100vh;
-                background-image: url('data:image/jpeg;base64,{pool_water_b64}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                opacity: 0.25;
-                z-index: -1;
-                pointer-events: none;
-                filter: blur(0.5px) brightness(1.1) contrast(0.9);
-                mix-blend-mode: soft-light;
-            }}
-            
-            /* Add a gentle gradient overlay for even more tranquility */
-            .main .block-container::before {{
-                content: '';
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 35%;
-                height: 100vh;
-                background: linear-gradient(135deg, rgba(240, 248, 255, 0.3) 0%, rgba(176, 224, 255, 0.2) 100%);
-                z-index: -2;
-                pointer-events: none;
-            }}
-            """
-        else:
-            # Fallback if image not found - make it more visible for debugging
-            pool_water_css = """
-            /* Fallback gradient background - more visible */
-            .main .block-container::after {
-                content: '';
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 35%;
-                height: 100vh;
-                background: radial-gradient(ellipse at 50% 50%, rgba(11, 130, 191, 0.15) 0%, rgba(176, 224, 255, 0.08) 100%);
-                z-index: -1;
-                pointer-events: none;
-            }
-            /* Debug border to see if background area is working */
-            .main .block-container::before {
-                content: 'Pool Water Area';
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                background: rgba(11, 130, 191, 0.8);
-                color: white;
-                padding: 5px 10px;
-                border-radius: 5px;
-                z-index: 1000;
-                font-size: 12px;
-                pointer-events: none;
-            }
-            """
-    except Exception as e:
-        # Fallback if any error
-        pool_water_css = """
-        /* Error fallback - simple gradient */
-        .main .block-container::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 35%;
-            height: 100vh;
-            background: linear-gradient(135deg, rgba(240, 248, 255, 0.3) 0%, rgba(176, 224, 255, 0.1) 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        """
+    # Removed pool water background for better light/dark mode compatibility
 
-    # CSS for styling and background colors - FIXED COLORS + AGGRESSIVE OVERRIDES
+    # CSS for styling - improved light/dark mode compatibility
     st.markdown(f"""
     <style>
-        /* FORCE LIGHT MODE FOR EVERYONE */
-        *, *::before, *::after {{
-            color-scheme: light !important;
-        }}
-        
-        .stApp {{ 
-            background-color: #f0f8ff !important; 
-            color: #03263a !important; 
-        }}
-        .css-18e3th9 {{ background-color: #f0f8ff !important; }}
+        /* Better light/dark mode support */
         .stButton>button {{ 
             background-color: #0b82bf !important; 
             color: #ffffff !important; 
+            border-radius: 6px !important;
         }}
         .stDownloadButton>button {{ 
             background-color: #0b82bf !important; 
             color: #ffffff !important; 
-        }}
-        .stSidebar {{ 
-            background-color: #e6f3ff !important; 
-            color: #03263a !important;
-        }}
-        .stMarkdown div {{ 
-            color: #03263a !important; 
-            background-color: transparent !important;
-        }}
-        
-        /* AGGRESSIVE TEXT COLOR OVERRIDES */
-        .stMarkdown, .stMarkdown p, .stMarkdown div, .stMarkdown span,
-        h1, h2, h3, h4, h5, h6, p, div, span, label, .stSelectbox label,
-        .stNumberInput label, .stTextInput label {{
-            color: #03263a !important;
-        }}
-        
-        /* SIDEBAR TEXT FIXES */
-        .stSidebar .stMarkdown, .stSidebar h1, .stSidebar h2, .stSidebar h3,
-        .stSidebar p, .stSidebar div, .stSidebar span, .stSidebar label {{
-            color: #03263a !important;
+            border-radius: 6px !important;
         }}
         
         img.logo-right {{ max-height:200px; }}
         
-        /* REMOVE POOL WATER BACKGROUND FOR BETTER PERFORMANCE */
-        .main .block-container {{ 
-            background-color: #f0f8ff !important; 
+        /* Input fields with better contrast */
+        .stTextInput > div > div, .stNumberInput > div > div, .stSelectbox > div > div {{
+            border: 2px solid #b3d9ff !important;
+            border-radius: 6px !important;
         }}
-        .stContainer {{ background-color: #f0f8ff !important; }}
-        div[data-testid="stVerticalBlock"] {{ background-color: #f0f8ff !important; }}
-        div[data-testid="stHorizontalBlock"] {{ background-color: #f0f8ff !important; }}
-        .element-container {{ 
-            background-color: rgba(240, 248, 255, 0.9) !important; 
-            color: #03263a !important;
-        }}
-        section[data-testid="stSidebar"] {{ 
-            background-color: #e6f3ff !important; 
-            color: #03263a !important;
-        }}
-        
-        /* Make main areas solid for better readability */
-        div[role="main"] {{ background-color: #f0f8ff !important; }}
-        section.main {{ background-color: #f0f8ff !important; }}
-        .css-k1vhr4, .css-1d391kg {{ background-color: #f0f8ff !important; }}
         
         /* Mobile Responsiveness */
         @media (max-width: 768px) {{
@@ -177,45 +48,7 @@ def main():
     </style>
     """, unsafe_allow_html=True)
 
-    # REMOVE POOL WATER BACKGROUND FOR BETTER PERFORMANCE
-    # Simple gradient background instead of heavy image
-    st.markdown('''
-    <div style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0f8ff 100%);
-        z-index: -100;
-        pointer-events: none;
-    "></div>
-    <style>
-    /* Force all areas to have solid backgrounds for readability */
-    .stApp, .main, .block-container {
-        background: #f0f8ff !important;
-        background-color: #f0f8ff !important;
-    }
-    /* Input fields - solid backgrounds for visibility */
-    .stTextInput > div > div, .stNumberInput > div > div, .stSelectbox > div > div {
-        background: #ffffff !important;
-        border: 2px solid #b3d9ff !important;
-        border-radius: 4px !important;
-        color: #03263a !important;
-    }
-    /* Tables and content areas - solid backgrounds */
-    .stDataFrame, .stTable {
-        background: #ffffff !important;
-        border: 1px solid #b3d9ff !important;
-        border-radius: 8px !important;
-    }
-    /* Sidebar - solid background */
-    .stSidebar {
-        background-color: #e6f3ff !important;
-        color: #03263a !important;
-    }
-    </style>
-    ''', unsafe_allow_html=True)
+
 
     # Custom font loading
     @st.cache_data
@@ -253,6 +86,44 @@ def main():
         if workspace_logo:
             st.image(workspace_logo, width=200)
 
+    # MAIN INPUTS SECTION - MOVED FROM SIDEBAR
+    st.subheader('Inputs')
+    
+    # Create input columns for better mobile layout
+    input_col1, input_col2 = st.columns([1, 1])
+    
+    with input_col1:
+        flow_gpm = st.number_input('Flow Rate (gpm)', value=float(flow_gpm), min_value=0.0, step=1.0)
+    
+    with input_col2:
+        # Change "Discharge" to "Return"
+        line_type = st.selectbox('Line Type', options=['Suction', 'Return'], 
+                                index=0 if (str(line_type).lower().startswith('suction')) else 1, 
+                                help='Choose Suction or Return')
+    
+    st.write(f'Water ν (ft²/s): {nu}')
+    
+    # Advanced threshold controls - always visible
+    st.subheader('Thresholds')
+    
+    threshold_col1, threshold_col2 = st.columns([1, 1])
+    
+    with threshold_col1:
+        if line_type == 'Suction':
+            default_design = 4.5
+        else:  # Return (previously Discharge)
+            default_design = 6.0
+        design_limit = st.number_input('Design limit (ft/s)', value=float(default_design), help='Velocity considered fully acceptable')
+    
+    with threshold_col2:
+        if line_type == 'Suction':
+            default_line = 6.0
+        else:  # Return (previously Discharge)
+            default_line = 8.0
+        line_limit = st.number_input('Line limit (ft/s)', value=float(default_line), help='Upper limit for this line type; velocities above this are unacceptable')
+    
+    st.caption('Status rule: Acceptable if ≤ Design limit; Above design limit if ≤ Line limit; Unacceptable otherwise')
+
     # Load frankthearchitect font from the app directory
     embedded_font_css = None
     try:
@@ -270,81 +141,18 @@ def main():
 
 
 
-    # Inject FrankTheArchitect font CSS for all text - FIXED COLORS + READABILITY
+    # Inject FrankTheArchitect font CSS for all text - improved light/dark mode support
     font_css_block = embedded_font_css or "@font-face { font-family: 'FrankTheArchitect'; src: local('FrankTheArchitect'), local('Architect'); }"
     st.markdown(f"""
     <style>
     {font_css_block}
     html, body, [class*="css"], .stApp, .stMarkdown, h1, h2, h3, h4, h5, h6, p, div, span {{ 
         font-family: FrankTheArchitect, 'Architect', monospace !important; 
-        color: #03263a !important;
     }}
     .kpi-badge {{
         display:inline-block; padding:8px 14px; border-radius:8px; color: white; font-weight:700; font-size:20px; font-family: FrankTheArchitect, monospace;
     }}
     .logo-accent {{ background: linear-gradient(90deg, #0b82bf, rgba(255,255,255,0.13)); padding:6px; border-radius:8px }}
-    
-    /* Expandable sections with solid backgrounds for readability */
-    .stExpander {{ 
-        background: #ffffff !important; 
-        border: 3px solid #0b82bf !important; 
-        border-radius: 10px !important; 
-        margin: 10px 0 !important;
-        overflow: hidden !important;
-        position: relative !important;
-    }}
-    .stExpander details {{ 
-        background: #ffffff !important; 
-        border: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }}
-    .stExpander details summary {{ 
-        background: #f0f8ff !important; 
-        color: #03263a !important;
-        padding: 15px !important; 
-        font-weight: bold !important; 
-        cursor: pointer !important;
-        border: none !important;
-        position: relative !important;
-        z-index: 1000 !important;
-    }}
-    .stExpander details[open] summary {{ 
-        background: #e6f3ff !important; 
-        border-bottom: 2px solid #0b82bf !important;
-    }}
-    
-    /* Hide unwanted elements */
-    .stExpander *::before, .stExpander *::after {{ 
-        display: none !important; 
-        visibility: hidden !important; 
-        content: "" !important; 
-        font-size: 0 !important;
-        opacity: 0 !important;
-    }}
-    .stExpander summary::marker {{ display: none !important; }}
-    .stExpander summary::-webkit-details-marker {{ display: none !important; }}
-    .stExpander .material-icons, .stExpander .material-symbols-outlined {{ 
-        display: none !important; 
-        visibility: hidden !important;
-    }}
-    
-    /* Hide sidebar toggle button tooltip */
-    .css-1dp5vir[title], [title*="keyboard"], [title*="arrow"], [title*="toggle"] {{
-        title: "" !important;
-    }}
-    .css-1dp5vir::before, .css-1dp5vir::after {{
-        display: none !important;
-        visibility: hidden !important;
-    }}
-    [data-testid="collapsedControl"] {{
-        title: "" !important;
-    }}
-    [data-testid="collapsedControl"]::before, [data-testid="collapsedControl"]::after {{
-        display: none !important;
-        visibility: hidden !important;
-        font-size: 0 !important;
-    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -413,48 +221,8 @@ def main():
     # kinematic viscosity is often in column B of its label row
     nu = get_cell_value(nu_row, 2) or 1.1e-05
 
-    st.sidebar.subheader('Inputs')
-    flow_gpm = st.sidebar.number_input('Flow Rate (gpm)', value=float(flow_gpm))
-
-    # Restrict line type to only Suction or Discharge
-    line_type = st.sidebar.selectbox('Line Type', options=['Suction', 'Discharge'], index=0 if (str(line_type).lower().startswith('suction')) else 1, help='Choose Suction or Discharge')
-    st.sidebar.write('Water ν (ft²/s):', nu)
-
-    # Threshold controls (using buttons instead of expanders)
-    st.sidebar.markdown('&nbsp;', unsafe_allow_html=True)
-    if st.sidebar.button('⚙️ Advanced Thresholds', key='thresholds_btn'):
-        st.session_state.show_thresholds = not st.session_state.get('show_thresholds', False)
-    
-    if st.session_state.get('show_thresholds', False):
-        if line_type == 'Suction':
-            default_design = 4.5
-            default_line = 6.0
-        else:
-            default_design = 6.0
-            default_line = 8.0
-        design_limit = st.sidebar.number_input('Design limit (ft/s)', value=float(default_design), help='Velocity considered fully acceptable')
-        line_limit = st.sidebar.number_input('Line limit (ft/s)', value=float(default_line), help='Upper limit for this line type; velocities above this are unacceptable')
-        st.sidebar.caption('Status rule: Acceptable if ≤ Design limit; Above design limit if ≤ Line limit; Unacceptable otherwise')
-    else:
-        # Use defaults when not shown
-        if line_type == 'Suction':
-            design_limit = 4.5
-            line_limit = 6.0
-        else:
-            design_limit = 6.0
-            line_limit = 8.0
-    
-    st.sidebar.container()
-    st.sidebar.markdown('---')
-    
-    st.sidebar.markdown('---')  # Add separator
-
-
-    # Debug toggle
-    st.sidebar.container()
-    st.sidebar.markdown('&nbsp;', unsafe_allow_html=True)  # Add space  
-    debug = st.sidebar.checkbox('Show debug info', value=False)
-    st.sidebar.container()
+    # Remove all sidebar inputs - we'll use main area inputs only
+    debug = False  # Remove debug functionality
 
     # Locate the pipe size table by finding the header row that starts with 'Nominal Size'
     table_header_row = None
@@ -531,6 +299,44 @@ def main():
         recommended_size = first_acceptable['Nominal (in)']
         recommended_velocity = first_acceptable['Velocity (ft/s)']
 
+    # INPUTS SECTION - MOVED TO BE RIGHT BEFORE RESULTS
+    st.subheader('Inputs')
+    
+    # Create input columns for better mobile layout
+    input_col1, input_col2 = st.columns([1, 1])
+    
+    with input_col1:
+        flow_gpm = st.number_input('Flow Rate (gpm)', value=float(flow_gpm), min_value=0.0, step=1.0)
+    
+    with input_col2:
+        # Change "Discharge" to "Return"
+        line_type = st.selectbox('Line Type', options=['Suction', 'Return'], 
+                                index=0 if (str(line_type).lower().startswith('suction')) else 1, 
+                                help='Choose Suction or Return')
+    
+    st.write(f'Water ν (ft²/s): {nu}')
+    
+    # Advanced threshold controls - always visible
+    st.subheader('Thresholds')
+    
+    threshold_col1, threshold_col2 = st.columns([1, 1])
+    
+    with threshold_col1:
+        if line_type == 'Suction':
+            default_design = 4.5
+        else:  # Return (previously Discharge)
+            default_design = 6.0
+        design_limit = st.number_input('Design limit (ft/s)', value=float(default_design), help='Velocity considered fully acceptable')
+    
+    with threshold_col2:
+        if line_type == 'Suction':
+            default_line = 6.0
+        else:  # Return (previously Discharge)
+            default_line = 8.0
+        line_limit = st.number_input('Line limit (ft/s)', value=float(default_line), help='Upper limit for this line type; velocities above this are unacceptable')
+    
+    st.caption('Status rule: Acceptable if ≤ Design limit; Above design limit if ≤ Line limit; Unacceptable otherwise')
+    
     st.subheader('Computed pipe table')
 
     # Use AgGrid for nicer interactive table with conditional text coloring
@@ -635,18 +441,14 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # Status explanation (using buttons instead of expanders)
-    st.container()
-    st.markdown('&nbsp;', unsafe_allow_html=True)
-    if st.button('📋 Show Status Explanation', key='status_explanation'):
-        st.info('''
-        **Status Guide:**
-        - **Acceptable** 🟢: Velocity ≤ Design limit (fully acceptable)
-        - **Above design limit** 🟡: Design limit < Velocity ≤ Line limit (use with caution)
-        - **Unacceptable** 🔴: Velocity > Line limit (do not use)
-        ''')
+    # Status explanation - always visible
+    st.info('''
+    **Status Guide:**
+    - **Acceptable** 🟢: Velocity ≤ Design limit (fully acceptable)
+    - **Above design limit** 🟡: Design limit < Velocity ≤ Line limit (use with caution)
+    - **Unacceptable** 🔴: Velocity > Line limit (do not use)
+    ''')
     
-    st.container()
     st.markdown('---')
 
     # Diagram / chart of velocities vs size (improved visuals)
