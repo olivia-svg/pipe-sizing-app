@@ -275,11 +275,6 @@ def main():
 
     df = pd.DataFrame(data)
 
-    # Show debug info if toggled
-    if debug:
-        st.sidebar.write('Detected rows', rows[:6])
-        st.sidebar.write('Constants', constants)
-
     # Choose which status column to display based on line type
     status_col = 'Suction Status' if line_type == 'Suction' else 'Return Status'
     df['Status'] = df[status_col]
@@ -459,14 +454,6 @@ def main():
             # sanitize infinite values (avoid chained-assignment inplace warning)
             df['Velocity (ft/s)'] = df['Velocity (ft/s)'].replace([float('inf'), float('-inf')], pd.NA)
 
-            # report NaNs and dtypes if debug
-            if debug:
-                st.sidebar.write('DataFrame dtypes:')
-                st.sidebar.write(df.dtypes.astype(str).to_dict())
-                st.sidebar.write('DataFrame head:')
-                st.sidebar.write(df.head().to_dict(orient='records'))
-                st.sidebar.write('Velocity NaN count:', int(df['Velocity (ft/s)'].isna().sum()))
-
             # keep nominal as string for category axis but sort by numeric value properly
             try:
                 df['_nominal_sort'] = pd.to_numeric(df['Nominal (in)'], errors='coerce')
@@ -491,9 +478,6 @@ def main():
                         st.table(display_df)
                     except Exception:
                         st.write(df.head(20).to_dict(orient='records'))
-                if debug:
-                    st.sidebar.write('Cleaned df (first 20 rows):')
-                    st.sidebar.write(df.head(20).to_dict(orient='records'))
             else:
                 # Create color-coded bar chart based on status
                 try:
@@ -532,10 +516,7 @@ def main():
                     st.caption(f'Horizontal reference: {active_limit} ft/s limit')
                     altair_ok = True                # Chart rendered successfully - no additional stats needed
         except Exception:
-            st.error('Could not render chart. Enable debug to see details.')
-            if debug:
-                st.sidebar.error('Chart exception:')
-                st.sidebar.text(traceback.format_exc())
+            st.error('Could not render chart.')
 
     # Export button only shown when we have data
     # removed CSV download as requested
